@@ -18,8 +18,28 @@ namespace TestAcademicAPI
                 Console.WriteLine("       e.g. TestAcademicAPI.exe \"papers by sharad malik after 2010\"");
                 return;
             }
-            string structuredQuery = CallInterpretMethod(args[0]);
+
+            // Print the query received
+            string originalQuery = args[0];
+            Console.WriteLine("The query received: '{0}'\n", originalQuery);
+
+            // Call interpret method to get the structured query
+            string structuredQuery = CallInterpretMethod(originalQuery);
+            
+            // Check if the structured query is non-empty
+            if (String.IsNullOrEmpty(structuredQuery))
+            {
+                Console.WriteLine("Could not interpret the query: '{0}'", originalQuery);
+                Console.ReadKey();
+                return;
+            }
+
+            // Print the structured query
+            Console.WriteLine("The structured query: '{0}'\n", structuredQuery);
+
+            // Call evaluate method
             CallEvaluateMethod(structuredQuery);
+            Console.ReadKey();
         }
 
         private static string GetJsonResponse(string url)
@@ -58,10 +78,17 @@ namespace TestAcademicAPI
             string result = GetJsonResponse(url);
 
             // Deserialize the json and get the InterpretModel.Rootobject
-            InterpretModel.Rootobject obj = JsonConvert.DeserializeObject<InterpretModel.Rootobject>(result);   
+            InterpretModel.Rootobject obj = JsonConvert.DeserializeObject<InterpretModel.Rootobject>(result);
 
-            // Return the structured query expression required for evaluate method 
-            return obj.interpretations[0].rules[0].output.value; // "Composite(AA.AuN=='arnab sinha')"	
+            try
+            {
+                // Return the structured query expression required for evaluate method 
+                return obj.interpretations[0].rules[0].output.value; // "Composite(AA.AuN=='arnab sinha')"	
+            }
+            catch(Exception)
+            {
+                return string.Empty;
+            }
         }
         #endregion
 
@@ -76,6 +103,9 @@ namespace TestAcademicAPI
             
             // Get the Json response
             string result = GetJsonResponse(url);
+
+            // Print the json in the command prompt
+            Console.Write(result);
 
             // Deserialize the json and get the EvaluateModel.Rootobject
             EvaluateModel.Rootobject obj = JsonConvert.DeserializeObject<EvaluateModel.Rootobject>(result);
