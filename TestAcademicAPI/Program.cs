@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Web;
 using System.Text;
 using Newtonsoft.Json;
+using System;
 
 namespace TestAcademicAPI
 {
@@ -11,7 +12,13 @@ namespace TestAcademicAPI
     {
         static void Main(string[] args)
         {
-            string structuredQuery = CallInterpretMethod("papers by sharad malik after 2010");
+            if(args.Length < 1)
+            {
+                Console.WriteLine("Usage: TestAcademicAPI.exe <query>");
+                Console.WriteLine("       e.g. TestAcademicAPI.exe \"papers by sharad malik after 2010\"");
+                return;
+            }
+            string structuredQuery = CallInterpretMethod(args[0]);
             CallEvaluateMethod(structuredQuery);
         }
 
