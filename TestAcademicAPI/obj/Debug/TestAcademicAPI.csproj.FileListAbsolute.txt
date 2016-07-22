@@ -1,0 +1,8 @@
+c:\users\arsinha\documents\visual studio 2015\Projects\TestAcademicAPI\TestAcademicAPI\bin\Debug\TestAcademicAPI.exe.config
+c:\users\arsinha\documents\visual studio 2015\Projects\TestAcademicAPI\TestAcademicAPI\bin\Debug\TestAcademicAPI.exe
+c:\users\arsinha\documents\visual studio 2015\Projects\TestAcademicAPI\TestAcademicAPI\bin\Debug\TestAcademicAPI.pdb
+c:\users\arsinha\documents\visual studio 2015\Projects\TestAcademicAPI\TestAcademicAPI\obj\Debug\TestAcademicAPI.csprojResolveAssemblyReference.cache
+c:\users\arsinha\documents\visual studio 2015\Projects\TestAcademicAPI\TestAcademicAPI\obj\Debug\TestAcademicAPI.exe
+c:\users\arsinha\documents\visual studio 2015\Projects\TestAcademicAPI\TestAcademicAPI\obj\Debug\TestAcademicAPI.pdb
+c:\users\arsinha\documents\visual studio 2015\Projects\TestAcademicAPI\TestAcademicAPI\bin\Debug\Newtonsoft.Json.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\TestAcademicAPI\TestAcademicAPI\bin\Debug\Newtonsoft.Json.xml
