@@ -1,0 +1,38 @@
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\Bot Application1.dll.config
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\Bot Application1.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\Bot Application1.pdb
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\Autofac.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\Chronic.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\Microsoft.Bot.Builder.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\Microsoft.Bot.Connector.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\Microsoft.IdentityModel.Protocol.Extensions.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\Microsoft.Rest.ClientRuntime.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\Microsoft.WindowsAzure.Configuration.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\Newtonsoft.Json.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\System.IdentityModel.Tokens.Jwt.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\System.Net.Http.Formatting.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\System.Web.Http.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\System.Web.Http.WebHost.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\Autofac.xml
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\Microsoft.Bot.Builder.xml
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\Microsoft.Bot.Connector.xml
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\Microsoft.IdentityModel.Protocol.Extensions.pdb
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\Microsoft.IdentityModel.Protocol.Extensions.xml
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\Microsoft.Rest.ClientRuntime.xml
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\Microsoft.WindowsAzure.Configuration.xml
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\Newtonsoft.Json.xml
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\System.IdentityModel.Tokens.Jwt.pdb
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\System.IdentityModel.Tokens.Jwt.xml
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\System.Net.Http.Formatting.xml
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\System.Web.Http.xml
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\System.Web.Http.WebHost.xml
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\ar\Microsoft.Bot.Builder.resources.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\en\Microsoft.Bot.Builder.resources.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\es\Microsoft.Bot.Builder.resources.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\fa\Microsoft.Bot.Builder.resources.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\fr\Microsoft.Bot.Builder.resources.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\ja\Microsoft.Bot.Builder.resources.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\ru\Microsoft.Bot.Builder.resources.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\bin\zh-hans\Microsoft.Bot.Builder.resources.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\obj\Debug\Bot Application1.dll
+c:\users\arsinha\documents\visual studio 2015\Projects\AcademicBot\AcademicBot\obj\Debug\Bot Application1.pdb
