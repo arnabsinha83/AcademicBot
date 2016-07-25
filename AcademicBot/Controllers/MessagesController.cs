@@ -62,6 +62,7 @@ namespace AcademicBot
                 #endregion
 
                 // return our reply to the user
+                reply = activity.CreateReply($"The count of interpretations of the query you sent is {predicateList.Count}.\n");
                 await connector.Conversations.ReplyToActivityAsync(reply);
             }
             else

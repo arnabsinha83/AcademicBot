@@ -12,8 +12,8 @@ namespace AcademicBot.Conversation
         public string value { get; private set; }
         public double Confidence { get; private set; } // between 0 and 1
         public OperationType OperationType { get; private set; }
-
-        public Predicate(PredicateType type, string value, double confidence = 1.0, OperationType opType = OperationType.EQ)
+        public string StructuredQuery { get; private set; }
+        public Predicate(PredicateType type, string value, string structuredQuery, double confidence = 1.0, OperationType opType = OperationType.EQ)
         {
             if (type < PredicateType.Affiliation || type > PredicateType.PublicationYear)
             {
@@ -66,11 +66,23 @@ namespace AcademicBot.Conversation
                                                              {
                                                                 { ">", OperationType.GT },
                                                                 { "<", OperationType.LT },
-                                                                // FIXIT - add "=="
-
+                                                                { "=", OperationType.EQ },
                                                              };
 
         private static Regex PredicateRegex = new Regex(@"(Composite\([^\)]*\))|(Y[\>\<\=]\d{4})", RegexOptions.Compiled);
+
+        
+        #region Construct the conjunction of predicates from a list of predicates
+        public static string GetPredicateConjunction(List<Predicate> predicateList)
+        {
+            string reply = predicateList[0].StructuredQuery;
+            for(int i=1; i<predicateList.Count; i++)
+            {
+                reply = string.Format("AND({0},{1})", reply, predicateList[i].StructuredQuery);
+            }
+            return reply;
+        }
+        #endregion
 
         #region Get the array of predicates from the interpretations
         public static List<Conversation.Predicate> GetPredicateList(InterpretModel.Rootobject obj)
@@ -82,7 +94,8 @@ namespace AcademicBot.Conversation
                 {
                     string structuredQuery = r.output.value;
                     // Note: Ignore structured queries where there are more than one Composite 
-                    // for now. Think about it later.
+                    // for now. Think about it later. However, we should deal with queries like
+                    // "nips 2010". For that I will split the Regex
                     if(PredicateRegex.Matches(structuredQuery).Count > 1)
                     {
                         continue;
@@ -107,6 +120,7 @@ namespace AcademicBot.Conversation
                             }
                             pred = new Predicate(predType,                // PredicateType
                                                  attributeValue[1],       // Value
+                                                 leafPredicate,           // StructuredQuery  
                                                  interpretation.logprob,  // Confidence 
                                                  OperationType.EQ         // OperationType 
                                                 );
@@ -124,8 +138,9 @@ namespace AcademicBot.Conversation
                             }
                             pred = new Predicate(predType,                        // PredicateType
                                                  leafPredicate.Substring(2),      // Value
+                                                 leafPredicate,                   // StructuredQuery
                                                  interpretation.logprob,          // Confidence 
-                                                 opType                          // OperationType 
+                                                 opType                           // OperationType 
                                                 );
                         }
                         #endregion
