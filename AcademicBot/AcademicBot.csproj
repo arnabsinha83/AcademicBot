@@ -121,6 +121,8 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AcademicApi.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
+    <Compile Include="Conversation\ConversationConstants.cs" />
+    <Compile Include="Conversation\ConversationUtility.cs" />
     <Compile Include="Conversation\HackathonConjunctiveQuery.cs" />
     <Compile Include="Conversation\HackathonConversationManager.cs" />
     <Compile Include="Conversation\IConjunctiveQuery.cs" />

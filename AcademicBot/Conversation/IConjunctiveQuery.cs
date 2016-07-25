@@ -24,6 +24,6 @@
         /// <returns></returns>
         Dictionary<string, HashSet<Predicate>> GetAmbiguousPredicates();
 
-        IEnumerable<Predicate> GetAllPredicates();
+        List<Predicate> GetAllPredicates();
     }
 }

@@ -49,12 +49,17 @@ namespace AcademicBot
                     }
                     else
                     {
-                        List<Predicate> structuredQuery = (List<Predicate>)await convManager.GetStructuredConjunctiveQueryAsync(activity);
+                        //List<Predicate> structuredQuery = (List<Predicate>)await convManager.GetStructuredConjunctiveQueryAsync(activity);
+
                         // 1. get query string
                         // 2. call academic api
+                        List<Predicate> structuredQueryPredicates = AcademicApi.CallInterpretMethod(query);
+                        string structuredQuery = Utilities.GetPredicateConjunction(structuredQueryPredicates);
+                        string formatedResponseText = AcademicApi.CallEvaluateMethod(structuredQuery, 2);
                         // 3. call markdown formatter
 
-                        replyText.Append("Here is the list of answers");
+                        replyText.Append("Here is the list of answers\n");
+                        replyText.Append(formatedResponseText);
                     }
 
                 }

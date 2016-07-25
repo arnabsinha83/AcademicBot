@@ -3,9 +3,13 @@
     using System;
     using System.Collections.Generic;
 
+    [Newtonsoft.Json.JsonObject(Title = "queryObject")]
     public sealed class HackathonConjunctiveQuery : IConjunctiveQuery
     {
+        [Newtonsoft.Json.JsonProperty(PropertyName = "map")]
         Dictionary<string, HashSet<Predicate>> map;
+
+        [Newtonsoft.Json.JsonProperty(PropertyName = "numAmbPredicates")]
         int numAmbiguousPredicates;
 
         public HackathonConjunctiveQuery()

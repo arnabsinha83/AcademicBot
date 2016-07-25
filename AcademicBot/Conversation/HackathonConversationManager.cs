@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using Microsoft.Bot.Connector;
     using System.Threading.Tasks;
+    using Newtonsoft.Json;
 
     public sealed class HackathonConversationManager : IQueryConversationManager
     {
@@ -41,7 +42,9 @@
             BotData data = await this.GetBotDataAsync(activity);
 
             HackathonConjunctiveQuery query = new HackathonConjunctiveQuery(predicates);
+            string serializedString = JsonConvert.SerializeObject(query);
             data.SetProperty<HackathonConjunctiveQuery>(HackathonConversationManager.QueryName, query);
+            data.SetProperty<int>("count", 10);
 
             await this.SetBotDataAsync(activity, data);
         }
@@ -49,8 +52,10 @@
         public async Task<bool> ShouldAskClarifyingQuestionAsync(Activity activity)
         {
             BotData data = await this.GetBotDataAsync(activity);
-            HackathonConjunctiveQuery query = data.GetProperty<HackathonConjunctiveQuery>(HackathonConversationManager.QueryName);
-            return query.IsAmbiguous();
+            int count = data.GetProperty<int>("count");
+            HackathonConjunctiveQuery q = data.GetProperty<HackathonConjunctiveQuery>(HackathonConversationManager.QueryName);
+            //List<Predicate> query = JsonConvert.DeserializeObject<List<Predicate>>(data.GetProperty<string>(HackathonConversationManager.QueryName));
+            return false; // query.IsAmbiguous();
         }
 
         public async Task<string> GetNextClarifyingQuestionAsync(Activity activity)
