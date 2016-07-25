@@ -121,6 +121,13 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AcademicApi.cs" />
     <Compile Include="Controllers\MessagesController.cs" />
+    <Compile Include="Conversation\HackathonConjunctiveQuery.cs" />
+    <Compile Include="Conversation\HackathonConversationManager.cs" />
+    <Compile Include="Conversation\IConjunctiveQuery.cs" />
+    <Compile Include="Conversation\IQueryConversationManager.cs" />
+    <Compile Include="Conversation\OperationType.cs" />
+    <Compile Include="Conversation\Predicate.cs" />
+    <Compile Include="Conversation\predicateType.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

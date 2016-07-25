@@ -37,7 +37,8 @@ namespace AcademicBot
                 {
                     // Call evaluate method
                     string jsonReply = AcademicApi.CallEvaluateMethod(structuredQuery);
-                    reply = activity.CreateReply($"This is what I have:\n\n {jsonReply}");
+                    int count = await UpdateAndGetCounter(activity);
+                    reply = activity.CreateReply($"The number of messages you have sent {count}.\n This is what I have:\n\n {jsonReply}");
                 }
                 
                 // return our reply to the user
@@ -78,6 +79,27 @@ namespace AcademicBot
             }
 
             return null;
+        }
+
+        private async Task<int> UpdateAndGetCounter(Activity activity)
+        {
+            StateClient stateClient = activity.GetStateClient();
+            BotData conversationData = await stateClient.BotState.GetConversationDataAsync(activity.ChannelId, activity.From.Id);
+
+            int currentCount = conversationData.GetProperty<int>("MessageCounter");
+            if (currentCount < 1)
+            {
+                currentCount = 1;
+            }
+            else
+            {
+                currentCount++;
+            }
+
+            conversationData.SetProperty<int>("MessageCounter", currentCount);
+            await stateClient.BotState.SetConversationDataAsync(activity.ChannelId, activity.From.Id, conversationData);
+
+            return currentCount;
         }
     }
 }
