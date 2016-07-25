@@ -101,62 +101,6 @@ namespace AcademicBot
             return response;
         }
 
-        /// <summary>
-        /// POST: api/Messages
-        /// Receive a message from a user and reply to it
-        /// </summary>
-        public async Task<HttpResponseMessage> Post2([FromBody]Activity activity)
-        {
-            if (activity.Type == ActivityTypes.Message)
-            {
-                ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
-                Activity reply;
-
-                #region Custom code for AcademicBot that talks to the Academic API
-                string originalQuery = activity.Text;
-                List<Predicate> predicateList = AcademicApi.CallInterpretMethod(originalQuery);
-
-                #region Commenting out the old code
-                // Check if the structured query is non-empty
-                //if (String.IsNullOrEmpty(structuredQuery))
-                //{
-                //    reply = activity.CreateReply($"Could not understand the query '{activity.Text}'. Please try a different query.");
-                //}
-                //else
-                //{
-                //    // Call evaluate method
-                //    string jsonReply = AcademicApi.CallEvaluateMethod(structuredQuery);
-                //    reply = activity.CreateReply($"This is what I have:\n\n {jsonReply}");
-                //}
-                #endregion
-                #endregion
-
-                #region Commenting out the old code
-                // Check if the structured query is non-empty
-                //if (String.IsNullOrEmpty(structuredQuery))
-                //{
-                //    reply = activity.CreateReply($"Could not understand the query '{activity.Text}'. Please try a different query.");
-                //}
-                //else
-                //{
-                //    // Call evaluate method
-                //    string jsonReply = AcademicApi.CallEvaluateMethod(structuredQuery);
-                //    int count = await UpdateAndGetCounter(activity);
-                //    reply = activity.CreateReply($"The number of messages you have sent {count}.\n This is what I have:\n\n {jsonReply}");
-                //}
-                #endregion
-
-                // return our reply to the user
-                //await connector.Conversations.ReplyToActivityAsync(reply);
-            }
-            else
-            {
-                HandleSystemMessage(activity);
-            }
-            var response = Request.CreateResponse(HttpStatusCode.OK);
-            return response;
-        }
-
         private Activity HandleSystemMessage(Activity message)
         {
             if (message.Type == ActivityTypes.DeleteUserData)
