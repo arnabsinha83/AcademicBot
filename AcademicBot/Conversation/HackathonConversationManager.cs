@@ -4,18 +4,47 @@
     using System.Collections.Generic;
     using Microsoft.Bot.Connector;
     using System.Threading.Tasks;
+    using Newtonsoft.Json;
 
     public sealed class HackathonConversationManager : IQueryConversationManager
     {
         // Currently the bot can handle only one query at a time
-        public const string QueryName = "academicQuery";
+        private static readonly string QueryName = "academicQuery";
+        private static readonly string IsQueryRunning = "IsqueryRunning";
+
+        private static HackathonConversationManager singletonConversationManager;
+
+
+        private HackathonConversationManager()
+        {
+
+        }
+
+        public static HackathonConversationManager GetInstance()
+        {
+            if (HackathonConversationManager.singletonConversationManager == null)
+            {
+                HackathonConversationManager.singletonConversationManager = new HackathonConversationManager();
+            }
+
+            return HackathonConversationManager.singletonConversationManager;
+        }
+
+        public async Task<bool> IsAQueryInProgress(Activity activity)
+        {
+            BotData data = await this.GetBotDataAsync(activity);
+            bool ans = data.GetProperty<bool>(HackathonConversationManager.IsQueryRunning);
+            return ans;
+        }
 
         public async Task InitStructuredConjunctiveQueryAsync(List<Predicate> predicates, Activity activity)
         {
             BotData data = await this.GetBotDataAsync(activity);
 
             HackathonConjunctiveQuery query = new HackathonConjunctiveQuery(predicates);
+            string serializedString = JsonConvert.SerializeObject(query);
             data.SetProperty<HackathonConjunctiveQuery>(HackathonConversationManager.QueryName, query);
+            data.SetProperty<int>("count", 10);
 
             await this.SetBotDataAsync(activity, data);
         }
@@ -23,21 +52,25 @@
         public async Task<bool> ShouldAskClarifyingQuestionAsync(Activity activity)
         {
             BotData data = await this.GetBotDataAsync(activity);
-            HackathonConjunctiveQuery query = data.GetProperty<HackathonConjunctiveQuery>(HackathonConversationManager.QueryName);
-            return query.IsAmbiguous();
+            int count = data.GetProperty<int>("count");
+            HackathonConjunctiveQuery q = data.GetProperty<HackathonConjunctiveQuery>(HackathonConversationManager.QueryName);
+            //List<Predicate> query = JsonConvert.DeserializeObject<List<Predicate>>(data.GetProperty<string>(HackathonConversationManager.QueryName));
+            return false; // query.IsAmbiguous();
         }
 
-        public Task<string> GetNextClarifyingQuestionAsync(Activity activity)
+        public async Task<string> GetNextClarifyingQuestionAsync(Activity activity)
         {
-            throw new NotImplementedException();
+            await Task.FromResult(true);
+            return "Sorry your query is ambiguous. Curently I am wroking on how to ask clarifying questions to resolve the ambiguity";
         }
 
-        public Task<bool> ProcessResponseForClarifyingQuestionAsync(string response, Activity activity)
+        public async Task<bool> ProcessResponseForClarifyingQuestionAsync(Activity activity)
         {
-            throw new NotImplementedException();
+            await Task.FromResult(true);
+            return false;
         }
 
-        public async Task<IEnumerable<Predicate>> GetStructuredConjunctiveQueryAsync(Activity activity)
+        public async Task<List<Predicate>> GetStructuredConjunctiveQueryAsync(Activity activity)
         {
             BotData data = await this.GetBotDataAsync(activity);
             HackathonConjunctiveQuery query = data.GetProperty<HackathonConjunctiveQuery>(HackathonConversationManager.QueryName);

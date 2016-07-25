@@ -6,6 +6,9 @@
 
     interface IQueryConversationManager
     {
+
+        Task<bool> IsAQueryInProgress(Activity activity);
+
         /// <summary>
         /// Starts conversation for a new query. 
         /// </summary>
@@ -34,14 +37,14 @@
         /// </summary>
         /// <param name="response"></param>
         /// <retunrs>Returns false if response format is invalid. Otherwise, returns true</retunrs>
-        Task<bool> ProcessResponseForClarifyingQuestionAsync(string response, Activity activity);
+        Task<bool> ProcessResponseForClarifyingQuestionAsync(Activity activity);
 
         /// <summary>
         /// Returns the current list of predicate for the query. Note that the query could be ambiguous.
         /// untill claifying questions are required. 
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<Predicate>> GetStructuredConjunctiveQueryAsync(Activity activity);
+        Task<List<Predicate>> GetStructuredConjunctiveQueryAsync(Activity activity);
 
         /// <summary>
         /// Current conversation for the query has been sucessfully processed. 

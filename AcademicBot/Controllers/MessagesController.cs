@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using AcademicBot.Controllers;
 using AcademicBot.Conversation;
 using System.Collections.Generic;
+using System.Text;
 
 namespace AcademicBot
 {
@@ -22,53 +23,85 @@ namespace AcademicBot
         /// </summary>
         public async Task<HttpResponseMessage> Post([FromBody]Activity activity)
         {
+            ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
+            HackathonConversationManager convManager = HackathonConversationManager.GetInstance();
+            StringBuilder replyText = new StringBuilder();
+            Activity reply;
+
             if (activity.Type == ActivityTypes.Message)
             {
-                ConnectorClient connector = new ConnectorClient(new Uri(activity.ServiceUrl));
-                Activity reply;
+                // If needs help
+                if (activity.Text.ToUpper().Equals(ConversationConstants.HELP_STRING))
+                {
+                    replyText.Append(ConversationUtility.GetHelpText());
+                }
+                // If a valid new query
+                else if(activity.Text.ToUpper().Substring(0,ConversationConstants.QUESTION_PREFIX.Length).Equals(ConversationConstants.QUESTION_PREFIX))
+                {
+                    string query = activity.Text.Substring(ConversationConstants.QUESTION_PREFIX.Length);
+                    List<Predicate> predicateList = AcademicApi.CallInterpretMethod(query);
+                    await convManager.InitStructuredConjunctiveQueryAsync(predicateList, activity);
+                    
+                    // If the query is unambiguous
+                    if(await convManager.ShouldAskClarifyingQuestionAsync(activity))
+                    {
+                        replyText.Append(await convManager.GetNextClarifyingQuestionAsync(activity));
+                    }
+                    else
+                    {
+                        //List<Predicate> structuredQuery = (List<Predicate>)await convManager.GetStructuredConjunctiveQueryAsync(activity);
 
-                #region Custom code for AcademicBot that talks to the Academic API
-                string originalQuery = activity.Text;
-                List<Predicate> predicateList = AcademicApi.CallInterpretMethod(originalQuery);
+                        // 1. get query string
+                        // 2. call academic api
+                        List<Predicate> structuredQueryPredicates = AcademicApi.CallInterpretMethod(query);
+                        string structuredQuery = Utilities.GetPredicateConjunction(structuredQueryPredicates);
+                        string formatedResponseText = AcademicApi.CallEvaluateMethod(structuredQuery, 2);
+                        // 3. call markdown formatter
 
-                #region Commenting out the old code
-                // Check if the structured query is non-empty
-                //if (String.IsNullOrEmpty(structuredQuery))
-                //{
-                //    reply = activity.CreateReply($"Could not understand the query '{activity.Text}'. Please try a different query.");
-                //}
-                //else
-                //{
-                //    // Call evaluate method
-                //    string jsonReply = AcademicApi.CallEvaluateMethod(structuredQuery);
-                //    reply = activity.CreateReply($"This is what I have:\n\n {jsonReply}");
-                //}
-                #endregion
-                #endregion
+                        replyText.Append("Here is the list of answers\n");
+                        replyText.Append(formatedResponseText);
+                    }
 
-                #region Commenting out the old code
-                // Check if the structured query is non-empty
-                //if (String.IsNullOrEmpty(structuredQuery))
-                //{
-                //    reply = activity.CreateReply($"Could not understand the query '{activity.Text}'. Please try a different query.");
-                //}
-                //else
-                //{
-                //    // Call evaluate method
-                //    string jsonReply = AcademicApi.CallEvaluateMethod(structuredQuery);
-                //    int count = await UpdateAndGetCounter(activity);
-                //    reply = activity.CreateReply($"The number of messages you have sent {count}.\n This is what I have:\n\n {jsonReply}");
-                //}
-                #endregion
+                }
+                else if(await convManager.IsAQueryInProgress(activity))
+                {
+                    bool isProcessed = await convManager.ProcessResponseForClarifyingQuestionAsync(activity);
 
-                // return our reply to the user
-                reply = activity.CreateReply($"The count of interpretations of the query you sent is {predicateList.Count}.\n");
+                    if (!isProcessed)
+                    {
+                        replyText.Append("Sorry, could not understand your response, and will ask you the question again.\n");
+                        replyText.Append(await convManager.GetNextClarifyingQuestionAsync(activity));
+                    }
+                    else
+                    {
+                        if (await convManager.ShouldAskClarifyingQuestionAsync(activity))
+                        {
+                            replyText.Append(await convManager.GetNextClarifyingQuestionAsync(activity));
+                        }
+                        else
+                        {
+                            List<Predicate> structuredQuery = (List<Predicate>)await convManager.GetStructuredConjunctiveQueryAsync(activity);
+                            // 1. get query string
+                            // 2. call academic api
+                            // 3. call markdown formatter
+
+                            replyText.Append("Here is the list of answers");
+                        }
+                    }
+                }
+                else
+                {
+                    replyText.Append(ConversationUtility.GetIntroText()); 
+                }
+
+                reply = activity.CreateReply(replyText.ToString());
                 await connector.Conversations.ReplyToActivityAsync(reply);
             }
             else
             {
                 HandleSystemMessage(activity);
             }
+
             var response = Request.CreateResponse(HttpStatusCode.OK);
             return response;
         }

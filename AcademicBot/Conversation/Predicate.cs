@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using AcademicBot.Controllers;
-
-namespace AcademicBot.Conversation
+﻿namespace AcademicBot.Conversation
 {
     using System;
+    using System.Collections.Generic;
+    using System.Text.RegularExpressions;
+    using AcademicBot.Controllers;
 
     public class Predicate
     {
