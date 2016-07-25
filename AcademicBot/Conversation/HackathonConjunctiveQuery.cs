@@ -66,7 +66,7 @@
             return ambMap;
         }
 
-        public IEnumerable<Predicate> GetAllPredicates()
+        public List<Predicate> GetAllPredicates()
         {
             Dictionary<string, HashSet<Predicate>> ambMap = new Dictionary<string, HashSet<Predicate>>();
             List<Predicate> list = new List<Predicate>();
