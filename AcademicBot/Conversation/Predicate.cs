@@ -58,6 +58,9 @@ namespace AcademicBot.Conversation
                                                                 { "AA.AuN", PredicateType.AuthorName },
                                                                 { "AA.AfN", PredicateType.Affiliation },
                                                                 { "F.FN", PredicateType.FieldOfStudy },
+                                                                { "C.CN", PredicateType.PaperVenue },
+                                                                { "J.JN", PredicateType.PaperVenue },
+                                                                { "Ti", PredicateType.PaperTitle },
                                                                 // FIXIT - add more mappings
 
                                                              };
