@@ -58,6 +58,8 @@ namespace AcademicBot
                         string formatedResponseText = AcademicApi.CallEvaluateMethod(structuredQuery, 2);
                         // 3. call markdown formatter
 
+                        // ******** Sundara's code goes here ***********
+
                         replyText.Append("Here is the list of answers\n");
                         replyText.Append(formatedResponseText);
                     }
