@@ -29,6 +29,7 @@ namespace AcademicBot.Conversation
             this.value = value;
             this.Confidence = confidence;
             this.OperationType = opType;
+            this.StructuredQuery = structuredQuery;
         }
 
         public override bool Equals(object obj)
@@ -69,9 +70,9 @@ namespace AcademicBot.Conversation
                                                                 { "=", OperationType.EQ },
                                                              };
 
-        private static Regex PredicateRegex = new Regex(@"(Composite\([^\)]*\))|(Y[\>\<\=]\d{4})", RegexOptions.Compiled);
+        private static Regex PredicateCompositeRegex = new Regex(@"Composite\([^\)]*\)", RegexOptions.Compiled);
+        private static Regex PredicateYearRegex = new Regex(@"Y[\>\<\=]\d{4}", RegexOptions.Compiled);
 
-        
         #region Construct the conjunction of predicates from a list of predicates
         public static string GetPredicateConjunction(List<Predicate> predicateList)
         {
@@ -93,59 +94,64 @@ namespace AcademicBot.Conversation
                 foreach (var r in interpretation.rules)
                 {
                     string structuredQuery = r.output.value;
+             
                     // Note: Ignore structured queries where there are more than one Composite 
-                    // for now. Think about it later. However, we should deal with queries like
+                    // for now. Think about it later. However, we are dealing with queries like
                     // "nips 2010". For that I will split the Regex
-                    if(PredicateRegex.Matches(structuredQuery).Count > 1)
+                    if(PredicateCompositeRegex.Matches(structuredQuery).Count > 1)
                     {
                         continue;
                     }
-                    foreach (Match match in PredicateRegex.Matches(structuredQuery))
+
+                    #region Deal with predicates like "Composite(AA.AuN == 'albert einstein')"
+                    foreach (Match match in PredicateCompositeRegex.Matches(structuredQuery))
+                    {
+                        PredicateType predType = PredicateType.Unknown;
+                        Predicate pred = null;
+
+                        string leafPredicate = match.Value;
+                        int prefixLength = "Composite(".Length;
+                        string attributeValueStr = leafPredicate.Substring(prefixLength, leafPredicate.Length - prefixLength - 2);
+                        string[] attributeValue = attributeValueStr.Split(new string[] { "=='" }, StringSplitOptions.RemoveEmptyEntries);
+
+                        if (PredicateTypeMap.ContainsKey(attributeValue[0]))
+                        {
+                            predType = PredicateTypeMap[attributeValue[0]];
+                        }
+                        pred = new Predicate(predType,                // PredicateType
+                                             attributeValue[1],       // Value
+                                             leafPredicate,           // StructuredQuery  
+                                             interpretation.logprob,  // Confidence 
+                                             OperationType.EQ         // OperationType 
+                                            );
+                        predicateList.Add(pred);
+                    }
+                    #endregion
+
+                    #region Deal with predicates like "Y>2007"
+                    foreach (Match match in PredicateYearRegex.Matches(structuredQuery))
                     {
                         PredicateType predType = PredicateType.Unknown;
                         OperationType opType = OperationType.NOP;
                         Predicate pred = null;
 
                         string leafPredicate = match.Value;
-                        #region Deal with predicates like "Composite(AA.AuN == 'albert einstein')"
-                        if (leafPredicate.Contains("Composite"))
+                        predType = PredicateType.PublicationYear;
+                        string operatorStr = leafPredicate.Substring(1, 1);
+                        if (OperationTypeMap.ContainsKey(operatorStr))
                         {
-                            int prefixLength = "Composite(".Length;
-                            string attributeValueStr = leafPredicate.Substring(prefixLength, leafPredicate.Length - prefixLength - 2);
-                            string[] attributeValue = attributeValueStr.Split(new string[] { "=='" }, StringSplitOptions.RemoveEmptyEntries);
-
-                            if (PredicateTypeMap.ContainsKey(attributeValue[0]))
-                            {
-                                predType = PredicateTypeMap[attributeValue[0]];
-                            }
-                            pred = new Predicate(predType,                // PredicateType
-                                                 attributeValue[1],       // Value
-                                                 leafPredicate,           // StructuredQuery  
-                                                 interpretation.logprob,  // Confidence 
-                                                 OperationType.EQ         // OperationType 
-                                                );
-                            
+                            opType = OperationTypeMap[operatorStr];
                         }
-                        #endregion
-                        #region Deal with predicates like "Y>2007"
-                        else
-                        {
-                            predType = PredicateType.PublicationYear;
-                            string operatorStr = leafPredicate.Substring(1, 1);
-                            if (OperationTypeMap.ContainsKey(operatorStr))
-                            {
-                                opType = OperationTypeMap[operatorStr];
-                            }
-                            pred = new Predicate(predType,                        // PredicateType
-                                                 leafPredicate.Substring(2),      // Value
-                                                 leafPredicate,                   // StructuredQuery
-                                                 interpretation.logprob,          // Confidence 
-                                                 opType                           // OperationType 
-                                                );
-                        }
-                        #endregion
+                        pred = new Predicate(predType,                        // PredicateType
+                                             leafPredicate.Substring(2),      // Value
+                                             leafPredicate,                   // StructuredQuery
+                                             interpretation.logprob,          // Confidence 
+                                             opType                           // OperationType 
+                                            );
                         predicateList.Add(pred);
                     }
+                    #endregion
+
                 }
             }
             return predicateList;
