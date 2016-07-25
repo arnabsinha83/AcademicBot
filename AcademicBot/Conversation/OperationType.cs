@@ -5,6 +5,7 @@ namespace AcademicBot.Conversation
     {
         EQ,
         GT,
-        LT
+        LT,
+        NOP
     }
 }

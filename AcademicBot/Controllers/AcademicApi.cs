@@ -4,6 +4,8 @@ using System.Net;
 using System.Web;
 using Newtonsoft.Json;
 using System.IO;
+using AcademicBot.Conversation;
+using System.Collections.Generic;
 
 namespace AcademicBot.Controllers
 {
@@ -33,10 +35,10 @@ namespace AcademicBot.Controllers
 
         // Reference: https://dev.projectoxford.ai/docs/services/56332331778daf02acc0a50b/operations/56332331778daf06340c9666
         #region Interpret method
-        public static string CallInterpretMethod(string query,
-                                                 int complete = 1,    // autosuggestions are turned on by default
-                                                 int count = 5,       // default is five interpretations 
-                                                 int offset = 0)
+        public static List<Predicate> CallInterpretMethod(string query,
+                                                          int complete = 1,    // autosuggestions are turned on by default
+                                                          int count = 5,       // default is five interpretations 
+                                                          int offset = 0)
         {
             string url = string.Format("https://api.projectoxford.ai/academic/v1.0/interpret?query={0}&complete={1}&count={2}&offset={3}",
                                             query, complete, count, offset);
@@ -46,16 +48,7 @@ namespace AcademicBot.Controllers
 
             // Deserialize the json and get the InterpretModel.Rootobject
             InterpretModel.Rootobject obj = JsonConvert.DeserializeObject<InterpretModel.Rootobject>(result);
-
-            try
-            {
-                // Return the structured query expression required for evaluate method 
-                return obj.interpretations[0].rules[0].output.value; // "Composite(AA.AuN=='arnab sinha')"	
-            }
-            catch (Exception)
-            {
-                return string.Empty;
-            }
+            return Utilities.GetPredicateList(obj);
         }
         #endregion
 

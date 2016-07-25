@@ -15,6 +15,7 @@
 
         public HackathonConjunctiveQuery(List<Predicate> predicates)
         {
+            //  The key is the user supplied query like "albert einstein"
             this.map = new Dictionary<string, HashSet<Predicate>>();
 
             foreach (Predicate p in predicates)
