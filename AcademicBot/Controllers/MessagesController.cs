@@ -11,6 +11,7 @@ using AcademicBot.Controllers;
 using AcademicBot.Conversation;
 using System.Collections.Generic;
 using System.Text;
+using AcademicBot.Output;
 
 namespace AcademicBot
 {
@@ -58,11 +59,10 @@ namespace AcademicBot
                         string unformattedResponseText = AcademicApi.CallEvaluateMethod(structuredQuery, 2);
                         // 3. call markdown formatter
 
-                        // ******** Sundara's code goes here ***********
-                        // string formattedResponse = SundaraClass.Format(unformattedResponseText, 5);
+                        string formattedResponseText = new JsonFormatter().FormatEvaluateModel(unformattedResponseText);
 
                         replyText.Append("Here is the list of answers\n");
-                        replyText.Append(unformattedResponseText);
+                        replyText.Append(formattedResponseText);
                     }
 
                 }
