@@ -58,20 +58,13 @@ namespace AcademicBot.Controllers
                                                 int count = 10,
                                                 int offset = 0)
         {
-            string url = string.Format("https://api.projectoxford.ai/academic/v1.0/evaluate?expr={0}&model=latest&count={1}&offset={2}&attributes=Id,Ti,Y,CC,AA.AuN,AA.AuId",
-                                            expr, count, offset);
+            string entityAttributes = "Id,Ti,Y,CC,AA.AuN,AA.AuId,AA.AfN,AA.AfId,F.FN,F.FId,J.JId,J.JN,C.CN,C.CId,E";
+            string url = string.Format("https://api.projectoxford.ai/academic/v1.0/evaluate?expr={0}&model=latest&count={1}&offset={2}&attributes={3}",
+                                            expr, count, offset, entityAttributes);
 
             // Get the Json response
             string result = GetJsonResponse(url);
 
-            // Print the json in the command prompt
-            //Console.Write(result);
-
-            // Deserialize the json and get the EvaluateModel.Rootobject
-            EvaluateModel.Rootobject obj = JsonConvert.DeserializeObject<EvaluateModel.Rootobject>(result);
-
-            // Return the structured query expression required for evaluate method 
-            //return obj.interpretations[0].rules[0].output.Value; // "Composite(AA.AuN=='arnab sinha')"	
             return result;
         }
         #endregion
@@ -116,17 +109,59 @@ namespace AcademicBot.Controllers
         public class Entity
         {
             public float logprob { get; set; }
-            public Int64 Id { get; set; }
+            public long Id { get; set; }
             public string Ti { get; set; }
             public int Y { get; set; }
             public int CC { get; set; }
+            public string E { get; set; }
             public AA[] AA { get; set; }
+            public J J { get; set; }
+            public C C { get; set; }
+            public F[] F { get; set; } 
+        }
+
+        public class F
+        {
+            public string FN { get; set; }
+            public long FId { get; set; }
+        }
+
+        public class J
+        {
+            public string JN { get; set; }
+            public long JId { get; set; }
+        }
+
+        public class C
+        {
+            public string CN { get; set; }
+            public long CId { get; set; }
         }
 
         public class AA
         {
             public string AuN { get; set; }
             public long AuId { get; set; }
+            public string AfN { get; set; }
+            public long AfId { get; set; }
+        }
+
+    }
+
+    public class ExtendedAttributesModel
+    {
+        public class Rootobject
+        {
+            public string DN { get; set; }
+            public S[] S { get; set; }
+            public string VFN { get; set; }
+            public string VSN { get; set; }
+        }
+
+        public class S
+        {
+            public int Ty { get; set; }
+            public string U { get; set; }
         }
     }
 }

@@ -76,7 +76,7 @@ namespace AcademicBot
                         {
                             string formattedResponseText = await this.GetFormattedResponseAsync(activity, convManager);
 
-                            replyText.Append("Here is the list of answers\n");
+                            replyText.Append("Here is the list of answers.\n\n");
                             replyText.Append(formattedResponseText);
                         }
                     }
@@ -103,7 +103,7 @@ namespace AcademicBot
             List<Predicate> structuredQueryPredicates = await convManager.GetStructuredConjunctiveQueryAsync(activity);
             string structuredQuery = Utilities.GetPredicateConjunction(structuredQueryPredicates);
             string unformattedResponseText = AcademicApi.CallEvaluateMethod(structuredQuery, ConversationConstants.MAX_RESULTS);
-            return new JsonFormatter().FormatEvaluateModel(unformattedResponseText);
+            return new JsonFormatter(unformattedResponseText).FormatEvaluateModel();
         }
 
         private Activity HandleSystemMessage(Activity message)
