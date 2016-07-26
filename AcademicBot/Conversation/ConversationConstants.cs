@@ -9,5 +9,6 @@ namespace AcademicBot.Conversation
     {
         public const string HELP_STRING = "HELP";
         public const string QUESTION_PREFIX = "Q ";
+        public const int MAX_RESULTS = 2;
     }
 }

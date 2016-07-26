@@ -5,12 +5,14 @@
     using Microsoft.Bot.Connector;
     using System.Threading.Tasks;
     using Newtonsoft.Json;
+    using System.Text;
 
     public sealed class HackathonConversationManager : IQueryConversationManager
     {
         // Currently the bot can handle only one query at a time
         private static readonly string QueryName = "academicQuery";
         private static readonly string IsQueryRunning = "IsqueryRunning";
+        private static readonly string QuestionDataText = "question";
 
         private static HackathonConversationManager singletonConversationManager;
 
@@ -44,6 +46,7 @@
             HackathonConjunctiveQuery query = new HackathonConjunctiveQuery(predicates);
             string serializedString = JsonConvert.SerializeObject(query.GetAllPredicates());
             data.SetProperty<string>(HackathonConversationManager.QueryName, serializedString);
+            data.SetProperty<bool>(HackathonConversationManager.IsQueryRunning, true);
 
             await this.SetBotDataAsync(activity, data);
         }
@@ -63,20 +66,101 @@
 
         public async Task<string> GetNextClarifyingQuestionAsync(Activity activity)
         {
-            await Task.FromResult(true);
-            return "Sorry your query is ambiguous. Curently I am wroking on how to ask clarifying questions to resolve the ambiguity";
+            BotData data = await this.GetBotDataAsync(activity);
+            HackathonConjunctiveQuery query = this.GetQueryFromBotData(data);
+
+            string questionText = "";
+            List<Predicate> ambiguousPredicate;
+
+            foreach (KeyValuePair<PredicateType, HashSet<Predicate>> entry in query.TypeMap)
+            {
+                if (entry.Value.Count > 1)
+                {
+                    questionText = this.GetQuestionText(entry, out ambiguousPredicate);
+                    data.SetProperty<List<Predicate>>(HackathonConversationManager.QuestionDataText, ambiguousPredicate);
+                }
+            }
+
+            await this.SetBotDataAsync(activity, data);
+            return questionText;
         }
 
+        private string GetQuestionText(KeyValuePair<PredicateType, HashSet<Predicate>> entry, out List<Predicate> ambiguousPredicate)
+        {
+            StringBuilder questionText = new StringBuilder();
+
+            switch(entry.Key)
+            {
+                case PredicateType.AuthorName:
+                    questionText.Append("Your query matched multiple authors. Plese pick one to proceed");
+                    questionText.Append(this.GetQuestionOptions(entry.Value, out ambiguousPredicate));
+                    break;
+
+                default:
+                    ambiguousPredicate = new List<Predicate>();
+                    questionText.Append("Sorry, your query is ambiguous.Curently I am wroking on how to ask clarifying questions to resolve this specific type of ambiguity.");
+                    break;
+            }
+
+            return questionText.ToString();
+        }
+
+        private string GetQuestionOptions(HashSet<Predicate> value, out List<Predicate> ambiguousPredicate)
+        {
+            StringBuilder sb = new StringBuilder();
+            ambiguousPredicate = new List<Predicate>();
+            int count = 1; // Make it ABCD
+
+            foreach (Predicate p in value)
+            {
+                sb.Append(String.Format("({0}) {1}\n", count++, p.Value));
+                ambiguousPredicate.Add(p);
+            }
+
+            return sb.ToString();
+        }
+        
         public async Task<bool> ProcessResponseForClarifyingQuestionAsync(Activity activity)
         {
             await Task.FromResult(true);
-            return false;
+            BotData data = await this.GetBotDataAsync(activity);
+            HackathonConjunctiveQuery query = this.GetQueryFromBotData(data);
+            List<Predicate> questionMetadata = data.GetProperty<List<Predicate>>(HackathonConversationManager.QuestionDataText);
+
+            int option;
+
+            if(!int.TryParse(activity.Text, out option))
+            {
+                return false;
+            }
+            else // option is an integer
+            {
+                if(option > 0 && option <= questionMetadata.Count) // option valid
+                {
+                    for(int i = 0; i < questionMetadata.Count; i++)
+                    {
+                        if(i != option -1)
+                        {
+                            query.RemovePredicate(questionMetadata[i]);
+                        }
+                    }
+
+                    string serializedString = JsonConvert.SerializeObject(query.GetAllPredicates());
+                    data.SetProperty<string>(HackathonConversationManager.QueryName, serializedString);
+                    await this.SetBotDataAsync(activity, data);
+                    return true;
+                }
+                else // option invalid
+                {
+                    return false;
+                }
+            }
         }
 
         public async Task<List<Predicate>> GetStructuredConjunctiveQueryAsync(Activity activity)
         {
             BotData data = await this.GetBotDataAsync(activity);
-            HackathonConjunctiveQuery query = data.GetProperty<HackathonConjunctiveQuery>(HackathonConversationManager.QueryName);
+            HackathonConjunctiveQuery query = this.GetQueryFromBotData(data);
             return query.GetAllPredicates();
         }
 

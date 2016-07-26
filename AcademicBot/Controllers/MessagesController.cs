@@ -29,6 +29,9 @@ namespace AcademicBot
             StringBuilder replyText = new StringBuilder();
             Activity reply;
 
+            String p = activity.Text;
+            String x = p.ToUpper();
+
             if (activity.Type == ActivityTypes.Message)
             {
                 // If needs help
@@ -37,7 +40,7 @@ namespace AcademicBot
                     replyText.Append(ConversationUtility.GetHelpText());
                 }
                 // If a valid new query
-                else if(activity.Text.ToUpper().Substring(0,ConversationConstants.QUESTION_PREFIX.Length).Equals(ConversationConstants.QUESTION_PREFIX))
+                else if(activity.Text.Length > 2 && activity.Text.ToUpper().Substring(0,ConversationConstants.QUESTION_PREFIX.Length).Equals(ConversationConstants.QUESTION_PREFIX))
                 {
                     string query = activity.Text.Substring(ConversationConstants.QUESTION_PREFIX.Length);
                     List<Predicate> predicateList = AcademicApi.CallInterpretMethod(query);
@@ -50,16 +53,7 @@ namespace AcademicBot
                     }
                     else
                     {
-                        //List<Predicate> structuredQuery = (List<Predicate>)await convManager.GetStructuredConjunctiveQueryAsync(activity);
-
-                        // 1. get query string
-                        // 2. call academic api
-                        List<Predicate> structuredQueryPredicates = AcademicApi.CallInterpretMethod(query);
-                        string structuredQuery = Utilities.GetPredicateConjunction(structuredQueryPredicates);
-                        string unformattedResponseText = AcademicApi.CallEvaluateMethod(structuredQuery, 2);
-                        // 3. call markdown formatter
-
-                        string formattedResponseText = new JsonFormatter().FormatEvaluateModel(unformattedResponseText);
+                        string formattedResponseText = await this.GetFormattedResponseAsync(activity, convManager);
 
                         replyText.Append("Here is the list of answers\n");
                         replyText.Append(formattedResponseText);
@@ -72,7 +66,7 @@ namespace AcademicBot
 
                     if (!isProcessed)
                     {
-                        replyText.Append("Sorry, could not understand your response, and will ask you the question again.\n");
+                        replyText.Append(ConversationUtility.GetSorryAmbiguityText());
                         replyText.Append(await convManager.GetNextClarifyingQuestionAsync(activity));
                     }
                     else
@@ -83,12 +77,10 @@ namespace AcademicBot
                         }
                         else
                         {
-                            List<Predicate> structuredQuery = (List<Predicate>)await convManager.GetStructuredConjunctiveQueryAsync(activity);
-                            // 1. get query string
-                            // 2. call academic api
-                            // 3. call markdown formatter
+                            string formattedResponseText = await this.GetFormattedResponseAsync(activity, convManager);
 
-                            replyText.Append("Here is the list of answers");
+                            replyText.Append("Here is the list of answers\n");
+                            replyText.Append(formattedResponseText);
                         }
                     }
                 }
@@ -107,6 +99,14 @@ namespace AcademicBot
 
             var response = Request.CreateResponse(HttpStatusCode.OK);
             return response;
+        }
+
+        private async Task<string> GetFormattedResponseAsync(Activity activity, HackathonConversationManager convManager)
+        {
+            List<Predicate> structuredQueryPredicates = await convManager.GetStructuredConjunctiveQueryAsync(activity);
+            string structuredQuery = Utilities.GetPredicateConjunction(structuredQueryPredicates);
+            string unformattedResponseText = AcademicApi.CallEvaluateMethod(structuredQuery, ConversationConstants.MAX_RESULTS);
+            return new JsonFormatter().FormatEvaluateModel(unformattedResponseText);
         }
 
         private Activity HandleSystemMessage(Activity message)
