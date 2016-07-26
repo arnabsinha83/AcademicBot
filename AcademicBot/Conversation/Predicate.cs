@@ -7,8 +7,8 @@
 
     public class Predicate
     {
-        public PredicateType type { get; private set; }
-        public string value { get; private set; }
+        public PredicateType Type { get; private set; }
+        public string Value { get; private set; }
         public double Confidence { get; private set; } // between 0 and 1
         public OperationType OperationType { get; private set; }
         public string StructuredQuery { get; private set; }
@@ -24,8 +24,8 @@
                 throw new ArgumentNullException(String.Format("Value of a predicate can't be null"));
             }
 
-            this.type = type;
-            this.value = value;
+            this.Type = type;
+            this.Value = value;
             this.Confidence = confidence;
             this.OperationType = opType;
             this.StructuredQuery = structuredQuery;
@@ -40,12 +40,12 @@
 
             Predicate target = obj as Predicate;
 
-            return (this.OperationType == target.OperationType) && (this.value.Equals(target.value));
+            return (this.OperationType == target.OperationType) && (this.Value.Equals(target.Value));
         }
 
         public override int GetHashCode()
         {
-            return this.OperationType.GetHashCode() + this.value.GetHashCode();
+            return this.OperationType.GetHashCode() + this.Value.GetHashCode();
         }
     }
 
