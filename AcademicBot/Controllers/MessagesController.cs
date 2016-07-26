@@ -62,8 +62,16 @@ namespace AcademicBot
                             await convManager.EndStructedConjunctiveQueryAsync(activity);
 
                             replyText.Append("Here is the list of answers\n\n");
-                            replyText.Append(formattedResponseText);
-                            replyText.Append("\n\n Last question was answerd successfully. You can start a new question now!!\n\n");
+
+                            if (formattedResponseText.Length < 5)
+                            {
+                                replyText.Append("Sorry, your query returned no results. Please, start a new query.\n");
+                            }
+                            else
+                            {
+                                replyText.Append(formattedResponseText);
+                                replyText.Append("\n\n Last question was answerd successfully. You can start a new question now!!\n\n");
+                            }
                         }
                     }
                 }
@@ -88,8 +96,16 @@ namespace AcademicBot
                             await convManager.EndStructedConjunctiveQueryAsync(activity);
 
                             replyText.Append("Here is the list of answers.\n\n");
-                            replyText.Append(formattedResponseText);
-                            replyText.Append("\n\n Last question was answerd successfully. You can start a new question now!!\n\n");
+
+                            if (formattedResponseText.Length < 5)
+                            {
+                                replyText.Append("Sorry, your query returned no results. Please, start a new query.\n");
+                            }
+                            else
+                            {
+                                replyText.Append(formattedResponseText);
+                                replyText.Append("\n\n Last question was answerd successfully. You can start a new question now!!\n\n");
+                            }
                         }
                     }
                 }
