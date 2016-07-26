@@ -42,9 +42,8 @@
             BotData data = await this.GetBotDataAsync(activity);
 
             HackathonConjunctiveQuery query = new HackathonConjunctiveQuery(predicates);
-            string serializedString = JsonConvert.SerializeObject(query);
-            data.SetProperty<HackathonConjunctiveQuery>(HackathonConversationManager.QueryName, query);
-            data.SetProperty<int>("count", 10);
+            string serializedString = JsonConvert.SerializeObject(query.GetAllPredicates());
+            data.SetProperty<string>(HackathonConversationManager.QueryName, serializedString);
 
             await this.SetBotDataAsync(activity, data);
         }
@@ -52,10 +51,14 @@
         public async Task<bool> ShouldAskClarifyingQuestionAsync(Activity activity)
         {
             BotData data = await this.GetBotDataAsync(activity);
-            int count = data.GetProperty<int>("count");
-            HackathonConjunctiveQuery q = data.GetProperty<HackathonConjunctiveQuery>(HackathonConversationManager.QueryName);
-            //List<Predicate> query = JsonConvert.DeserializeObject<List<Predicate>>(data.GetProperty<string>(HackathonConversationManager.QueryName));
-            return false; // query.IsAmbiguous();
+            HackathonConjunctiveQuery query = this.GetQueryFromBotData(data);
+            return query.IsAmbiguous();
+        }
+
+        public HackathonConjunctiveQuery GetQueryFromBotData(BotData data)
+        {
+            List<Predicate> predicates = JsonConvert.DeserializeObject<List<Predicate>>(data.GetProperty<string>(HackathonConversationManager.QueryName));
+            return new HackathonConjunctiveQuery(predicates);
         }
 
         public async Task<string> GetNextClarifyingQuestionAsync(Activity activity)
