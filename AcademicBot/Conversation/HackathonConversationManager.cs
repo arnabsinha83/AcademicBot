@@ -69,15 +69,25 @@
             BotData data = await this.GetBotDataAsync(activity);
             HackathonConjunctiveQuery query = this.GetQueryFromBotData(data);
 
-            string questionText = "";
+            string questionText = "Sorry, I am told that your query to be ambiguous. I am not yet trained for this type of ambiguity. Please, start a new query.\n";
             List<Predicate> ambiguousPredicate;
 
             foreach (KeyValuePair<PredicateType, HashSet<Predicate>> entry in query.TypeMap)
             {
+                // Ambiguity type I, when there are multiple values for same PredicateType
                 if (entry.Value.Count > 1)
                 {
                     questionText = this.GetQuestionText(entry, out ambiguousPredicate);
                     data.SetProperty<List<Predicate>>(HackathonConversationManager.QuestionDataText, ambiguousPredicate);
+                }
+            }
+
+            foreach (KeyValuePair<string, HashSet<Predicate>> entry in query.ValueMap)
+            {
+                // Ambiguity type II, when the same value maps to multiple PredicateType
+                if (entry.Value.Count > 1)
+                {
+                    //TODO
                 }
             }
 
