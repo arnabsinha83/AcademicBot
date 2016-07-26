@@ -10,8 +10,9 @@ namespace AcademicBot.Output
     {
         private EvaluateModel.Rootobject Obj { get; set; }
         private int MaxAuthors { get; set; }
+        private int MaxFos { get; set; }
 
-        public JsonFormatter(string evalModel, int maxAuthors = 3)
+        public JsonFormatter(string evalModel, int maxAuthors = 3, int maxFos = 5)
         {
             try
             {
@@ -22,6 +23,7 @@ namespace AcademicBot.Output
                 // Do nothing
             }
             this.MaxAuthors = maxAuthors;
+            this.MaxFos = maxFos;
         }
         public string FormatEvaluateModel()
         {
@@ -41,7 +43,7 @@ namespace AcademicBot.Output
             }
             return string.Join("\n\n\n\n", entityMarkdownList);
         }
-
+        
         private string HandleEntity(EvaluateModel.Entity entity)
         {
             ExtendedAttributesModel.Rootobject extendedObj;
@@ -60,7 +62,7 @@ namespace AcademicBot.Output
             }
 
             // Add year
-            reply += String.Format(" {0}", HandleYear(entity.Y));
+            reply += String.Format(" {0}.", HandleYear(entity.Y));
             
             // Add FOS
             string fosStr = HandleFieldOfStudies(entity.F);
@@ -69,7 +71,27 @@ namespace AcademicBot.Output
                 reply += String.Format(" (Topics: {0})", fosStr);
             }
 
+            // Add citation count
+            string citationCountStr = HandleCitationCount(entity);
+            if (!String.IsNullOrEmpty(citationCountStr))
+            {
+                reply += String.Format(" {0}", citationCountStr);
+            }
+
             return reply;
+        }
+
+        private string HandleCitationCount(EvaluateModel.Entity entity)
+        {
+            if (entity.CC == 0)
+            {
+                return string.Empty;
+            }
+            else if (entity.CC == 1)
+            {
+                return @"1 citation";
+            }
+            return String.Format("{0} citations", entity.CC);
         }
 
         private string HandleVenue(EvaluateModel.Entity entity,
@@ -109,8 +131,10 @@ namespace AcademicBot.Output
                 return string.Empty;
             }
             List<string> fosStrList = new List<string>();
-            foreach(var f in fosList)
+            int fosDisplayCount = Math.Min(fosList.Length, this.MaxFos);
+            for(int index = 0; index < fosDisplayCount; index++)
             {
+                var f = fosList[index];
                 fosStrList.Add(HandleFos(f));
             }
             return String.Join(", ", fosStrList);
