@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using System.IO;
 using AcademicBot.Conversation;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace AcademicBot.Controllers
 {
@@ -63,6 +64,9 @@ namespace AcademicBot.Controllers
             query = query.Replace("papers published at ", "");
             query = query.Replace("papers published in ", "");
             query = query.Replace("papers at ", "");
+            query = query.Replace(" published in ", " ");
+            query = query.Replace(" in ", " ");
+            query = Regex.Replace(query, @"\s+", @" ");
             return query.Trim();
         }
 
