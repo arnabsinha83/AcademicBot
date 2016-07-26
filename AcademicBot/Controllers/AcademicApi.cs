@@ -61,6 +61,7 @@ namespace AcademicBot.Controllers
             query = query.Replace("papers authored by ", "papers by ");
             query = query.Replace("papers published by ", "papers by ");
             query = query.Replace("papers published at ", "");
+            query = query.Replace("papers published in ", "");
             query = query.Replace("papers at ", "");
             return query.Trim();
         }
@@ -68,7 +69,9 @@ namespace AcademicBot.Controllers
         public static string CreateAcademicMicrosoftLink(string query)
         {
             string sanitizedQuery = SanitizeQuery(query);
-            return String.Format("(https://academic.microsoft.com/#/search?iq=\"{0}\"&q={1}&filters=&from=0&sort=0)", sanitizedQuery, sanitizedQuery);
+            string iq = String.Format("%2540{0}%2540", sanitizedQuery.Replace(" ", "%2520"));
+            string q = String.Format("{0}", sanitizedQuery.Replace(" ", "%20"));
+            return String.Format("(https://academic.microsoft.com/#/search?iq={0}&q={1}&filters=&from=0&sort=0)", iq, q);
         }
 
         // Reference: https://dev.projectoxford.ai/docs/services/56332331778daf02acc0a50b/operations/565d753be597ed16ac3ffc03

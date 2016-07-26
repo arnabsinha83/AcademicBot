@@ -6,7 +6,7 @@ namespace AcademicBot.Conversation
     {
         public static string GetHelpText()
         {
-            return "You may start a new academic query by first saying \"Q 'your query'\". An example is “Q papers by Alber Einstein”. Here Q stands for a new query. \n If I can’t fully decipher your query I will ask clarifying questions llik, 'Do you mean papers Authored by (1) Albert Einstein , or papers from (2) Albert Einstein Institute? Please respond by option numbers.";
+            return "You may start a new academic query by first saying \"Q 'your query'\". An example is “Q papers by Alber Einstein”. Here Q stands for a new query. \n If I can’t fully decipher your query I will ask clarifying questions like, 'Do you mean papers Authored by (1) Albert Einstein, or papers from (2) Albert Einstein Institute? Please respond by option numbers.";
         }
 
         public static string GetIntroText()
