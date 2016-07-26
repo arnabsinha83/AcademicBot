@@ -16,7 +16,7 @@
         Task InitStructuredConjunctiveQueryAsync(List<Predicate> predicates, Activity activity);
 
         /// <summary>
-        /// Once a query conversation has started, this methods figures out whether 
+        /// Once a query conversation has started, this method figures out whether 
         /// the query is well-formed or more questions need to be asked to remove the
         /// ambiguity of the query.
         /// 
@@ -33,15 +33,15 @@
         Task<string> GetNextClarifyingQuestionAsync(Activity activity);
 
         /// <summary>
-        /// This methods process the response for the question asked.
+        /// This method processes the response for the question asked.
         /// </summary>
         /// <param name="response"></param>
-        /// <retunrs>Returns false if response format is invalid. Otherwise, returns true</retunrs>
+        /// <retunrs>Returns false, if response format is invalid. Otherwise, returns true</retunrs>
         Task<bool> ProcessResponseForClarifyingQuestionAsync(Activity activity);
 
         /// <summary>
-        /// Returns the current list of predicate for the query. Note that the query could be ambiguous.
-        /// untill claifying questions are required. 
+        /// Returns the current list of predicates in the query. Note that the query could be ambiguous as long as
+        /// at least one claifying question is required. 
         /// </summary>
         /// <returns></returns>
         Task<List<Predicate>> GetStructuredConjunctiveQueryAsync(Activity activity);

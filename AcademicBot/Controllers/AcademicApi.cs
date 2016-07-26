@@ -71,7 +71,7 @@ namespace AcademicBot.Controllers
             EvaluateModel.Rootobject obj = JsonConvert.DeserializeObject<EvaluateModel.Rootobject>(result);
 
             // Return the structured query expression required for evaluate method 
-            //return obj.interpretations[0].rules[0].output.value; // "Composite(AA.AuN=='arnab sinha')"	
+            //return obj.interpretations[0].rules[0].output.Value; // "Composite(AA.AuN=='arnab sinha')"	
             return result;
         }
         #endregion

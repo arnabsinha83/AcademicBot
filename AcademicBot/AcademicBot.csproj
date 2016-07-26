@@ -129,7 +129,7 @@
     <Compile Include="Conversation\IQueryConversationManager.cs" />
     <Compile Include="Conversation\OperationType.cs" />
     <Compile Include="Conversation\Predicate.cs" />
-    <Compile Include="Conversation\predicateType.cs" />
+    <Compile Include="Conversation\PredicateType.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
