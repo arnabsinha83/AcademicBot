@@ -28,10 +28,7 @@ namespace AcademicBot
             HackathonConversationManager convManager = HackathonConversationManager.GetInstance();
             StringBuilder replyText = new StringBuilder();
             Activity reply;
-
-            String p = activity.Text;
-            String x = p.ToUpper();
-
+            
             if (activity.Type == ActivityTypes.Message)
             {
                 // If needs help
@@ -40,7 +37,7 @@ namespace AcademicBot
                     replyText.Append(ConversationUtility.GetHelpText());
                 }
                 // If a valid new query
-                else if(activity.Text.Length > 2 && activity.Text.ToUpper().Substring(0,ConversationConstants.QUESTION_PREFIX.Length).Equals(ConversationConstants.QUESTION_PREFIX))
+                else if(activity.Text.Length > 2 && activity.Text.ToUpper().Substring(0, ConversationConstants.QUESTION_PREFIX.Length).Equals(ConversationConstants.QUESTION_PREFIX))
                 {
                     string query = activity.Text.Substring(ConversationConstants.QUESTION_PREFIX.Length);
                     List<Predicate> predicateList = AcademicApi.CallInterpretMethod(query);
@@ -136,27 +133,6 @@ namespace AcademicBot
             }
 
             return null;
-        }
-
-        private async Task<int> UpdateAndGetCounter(Activity activity)
-        {
-            StateClient stateClient = activity.GetStateClient();
-            BotData conversationData = await stateClient.BotState.GetConversationDataAsync(activity.ChannelId, activity.From.Id);
-
-            int currentCount = conversationData.GetProperty<int>("MessageCounter");
-            if (currentCount < 1)
-            {
-                currentCount = 1;
-            }
-            else
-            {
-                currentCount++;
-            }
-
-            conversationData.SetProperty<int>("MessageCounter", currentCount);
-            await stateClient.BotState.SetConversationDataAsync(activity.ChannelId, activity.From.Id, conversationData);
-
-            return currentCount;
         }
     }
 }
