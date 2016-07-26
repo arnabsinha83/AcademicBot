@@ -61,7 +61,7 @@ namespace AcademicBot
 
                         string formattedResponseText = new JsonFormatter().FormatEvaluateModel(unformattedResponseText);
 
-                        replyText.Append("Here is the list of answers\n");
+                        replyText.Append("Here is the list of answers\n\n");
                         replyText.Append(formattedResponseText);
                     }
 

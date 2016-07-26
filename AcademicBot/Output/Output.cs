@@ -1,20 +1,20 @@
 ﻿using System.Text;
 using AcademicBot.Controllers;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System;
 
 namespace AcademicBot.Output
 {
     public class JsonFormatter
     {
-        readonly StringBuilder _builder = new StringBuilder();
-
-        private EvaluateModel.Rootobject Rootobject { get; set; }
+        private EvaluateModel.Rootobject obj { get; set; }
 
         private int MaxAuthors { get; set; }
 
         public string FormatEvaluateModel(string evalModel, int maxAuthors = 3)
         {
-            Rootobject = JsonConvert.DeserializeObject<EvaluateModel.Rootobject>(evalModel);
+            obj = JsonConvert.DeserializeObject<EvaluateModel.Rootobject>(evalModel);
             this.MaxAuthors = maxAuthors;
 
             return FormatStringFromObj();
@@ -22,7 +22,7 @@ namespace AcademicBot.Output
 
         public string FormatEvaluateModel(EvaluateModel.Rootobject evalModel, int maxAuthors = 3)
         {
-            Rootobject = evalModel;
+            obj = evalModel;
             this.MaxAuthors = maxAuthors;
 
             return FormatStringFromObj();
@@ -30,44 +30,66 @@ namespace AcademicBot.Output
 
         private string FormatStringFromObj()
         {
-            HandleExpr();
-            HandleEntities();
-            return _builder.ToString();
+            return HandleEntities(obj.entities);
         }
 
-        private void HandleExpr()
+        private string HandleEntities(EvaluateModel.Entity[] entities)
         {
-            if (Rootobject.expr.Contains("Composite(AA.AfN=="))
+            List<string> entityMarkdownList = new List<string>();
+            foreach(var e in entities)
             {
-                _builder.AppendLine("**Organization:**" + Rootobject.expr.Replace("Composite(AA.AfN==", "").Replace(")", ""));
+                entityMarkdownList.Add(HandleEntity(e));
             }
-
-            if (Rootobject.expr.Contains("Composite(AA.AuN=="))
-            {
-                _builder.AppendLine("**Author:**" + Rootobject.expr.Replace("Composite(AA.AuN==", "").Replace(")", ""));
-            }
+            return string.Join("\n\n\n\n", entityMarkdownList);
         }
 
-        private void HandleEntities()
+        private string HandleEntity(EvaluateModel.Entity entity)
         {
-            foreach (var entity in Rootobject.entities)
-            {
-                _builder.AppendLine($"**Title**:{entity.Ti}, **Year**:{entity.Y} [link](https://academic.microsoft.com/#/detail/" + entity.Id + ")");
-                HandleAuthor(entity);
-            }
+            string reply = string.Format("\"{0}\",{1},{2}",
+                            HandleTitle(entity.Ti, entity.Id),
+                            HandleAuthors(entity.AA),
+                            HandleYear(entity.Y));
+            return reply;
         }
 
-        private void HandleAuthor(EvaluateModel.Entity entity)
+        private string HandleYear(int Y)
         {
-            _builder.Append("**Author(s):**");
-            for (var index = 0; index < (entity.AA.Length > MaxAuthors ? MaxAuthors : entity.AA.Length); index++)
-            {
-                var author = entity.AA[index];
-                _builder.Append($"{author.AuN},");
-            }
-
-            _builder.AppendLine();
+            return string.Format("{0}", Y);
         }
 
+        private string HandleTitle(string Ti, Int64 Id)
+        {
+            return string.Format("**[{0}]{1}**", Ti, CreateEntityLink(Id));
+        }
+
+        private string HandleAuthors(EvaluateModel.AA[] authors)
+        {
+            List<string> authorList = new List<string>();
+            int authorDisplayLength = authors.Length > MaxAuthors ? MaxAuthors : authors.Length;
+            for (var index = 0; index < authorDisplayLength; index++)
+            {
+                authorList.Add(HandleAuthor(authors[index]));
+            }
+            string reply = string.Join(", ", authorList);
+            if(authors.Length > MaxAuthors)
+            {
+                reply += "...";
+            }
+            return reply;
+        }
+
+        private string HandleAuthor(EvaluateModel.AA author)
+        {
+            return string.Format("*[{0}]{1}*", author.AuN, CreateEntityLink(author.AuId));
+        }
+
+        private string CreateEntityLink(long Id)
+        {
+            if(Id <= 0)
+            {
+                return string.Empty;
+            }
+            return string.Format("(https://academic.microsoft.com/#/detail/{0})", Id);
+        }
     }
 }
