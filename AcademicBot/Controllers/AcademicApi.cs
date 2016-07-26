@@ -40,6 +40,7 @@ namespace AcademicBot.Controllers
                                                           int count = 5,       // default is five interpretations 
                                                           int offset = 0)
         {
+            query = SanitizeQuery(query);
             string url = string.Format("https://api.projectoxford.ai/academic/v1.0/interpret?query={0}&complete={1}&count={2}&offset={3}",
                                             query, complete, count, offset);
 
@@ -51,6 +52,18 @@ namespace AcademicBot.Controllers
             return Utilities.GetPredicateList(obj);
         }
         #endregion
+
+        private static string SanitizeQuery(string query)
+        {
+            query = query.ToLower();
+            query = query.Replace("paper ", "papers ");
+            query = query.Replace("papers written by ", "papers by ");
+            query = query.Replace("papers authored by ", "papers by ");
+            query = query.Replace("papers published by ", "papers by ");
+            query = query.Replace("papers published at ", "");
+            query = query.Replace("papers at ", "");
+            return query.Trim();
+        }
 
         // Reference: https://dev.projectoxford.ai/docs/services/56332331778daf02acc0a50b/operations/565d753be597ed16ac3ffc03
         #region Evaluate method
