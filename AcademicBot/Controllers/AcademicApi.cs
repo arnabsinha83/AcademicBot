@@ -65,6 +65,12 @@ namespace AcademicBot.Controllers
             return query.Trim();
         }
 
+        public static string CreateAcademicMicrosoftLink(string query)
+        {
+            string sanitizedQuery = SanitizeQuery(query);
+            return String.Format("(https://academic.microsoft.com/#/search?iq=\"{0}\"&q={1}&filters=&from=0&sort=0)", sanitizedQuery, sanitizedQuery);
+        }
+
         // Reference: https://dev.projectoxford.ai/docs/services/56332331778daf02acc0a50b/operations/565d753be597ed16ac3ffc03
         #region Evaluate method
         public static string CallEvaluateMethod(string expr,

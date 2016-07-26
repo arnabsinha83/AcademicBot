@@ -70,7 +70,7 @@ namespace AcademicBot
                             else
                             {
                                 replyText.Append(formattedResponseText);
-                                replyText.Append("\n\n Last question was answerd successfully. You can start a new question now!!\n\n");
+                                replyText.Append("\n\n Last question was answered successfully. You can start a new question now!!\n\n");
                             }
                         }
                     }
@@ -124,6 +124,29 @@ namespace AcademicBot
 
             var response = Request.CreateResponse(HttpStatusCode.OK);
             return response;
+        }
+
+        private async Task<StringBuilder> HandleTerminalResponse(HackathonConversationManager convManager,
+                                                                 Activity activity,
+                                                                 string query)
+        {
+            string formattedResponseText = await this.GetFormattedResponseAsync(activity, convManager);
+            await convManager.EndStructedConjunctiveQueryAsync(activity);
+            StringBuilder replyText = new StringBuilder();
+
+            replyText.Append("Here is the list of answers.\n\n");
+
+            if (formattedResponseText.Length < 5)
+            {
+                replyText.Append("Sorry, I am told that your query to be ambiguous. I am not yet trained for this type of ambiguity. Please, start a new query.\n");
+            }
+            else
+            {
+                replyText.Append(formattedResponseText);
+                string academicMicrosoftLink = AcademicApi.CreateAcademicMicrosoftLink(query);
+                replyText.Append(String.Format("\n\n Find more information [here].{0} Last question was answered successfully. You can start a new question now!!\n\n", academicMicrosoftLink));
+            }
+            return replyText;
         }
 
         private async Task<string> GetFormattedResponseAsync(Activity activity, HackathonConversationManager convManager)
