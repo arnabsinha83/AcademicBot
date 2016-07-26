@@ -41,21 +41,28 @@ namespace AcademicBot
                 {
                     string query = activity.Text.Substring(ConversationConstants.QUESTION_PREFIX.Length);
                     List<Predicate> predicateList = AcademicApi.CallInterpretMethod(query);
-                    await convManager.InitStructuredConjunctiveQueryAsync(predicateList, activity);
-                    
-                    // If the query is unambiguous
-                    if(await convManager.ShouldAskClarifyingQuestionAsync(activity))
+
+                    if (predicateList.Count == 0)
                     {
-                        replyText.Append(await convManager.GetNextClarifyingQuestionAsync(activity));
+                        replyText.Append("Sorry, this query didn't return any results. Please consider checking the spellings.\n");
                     }
                     else
                     {
-                        string formattedResponseText = await this.GetFormattedResponseAsync(activity, convManager);
+                        await convManager.InitStructuredConjunctiveQueryAsync(predicateList, activity);
 
-                        replyText.Append("Here is the list of answers\n\n");
-                        replyText.Append(formattedResponseText);
+                        // If the query is unambiguous
+                        if (await convManager.ShouldAskClarifyingQuestionAsync(activity))
+                        {
+                            replyText.Append(await convManager.GetNextClarifyingQuestionAsync(activity));
+                        }
+                        else
+                        {
+                            string formattedResponseText = await this.GetFormattedResponseAsync(activity, convManager);
+
+                            replyText.Append("Here is the list of answers\n\n");
+                            replyText.Append(formattedResponseText);
+                        }
                     }
-
                 }
                 else if(await convManager.IsAQueryInProgress(activity))
                 {
