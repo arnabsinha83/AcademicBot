@@ -65,7 +65,7 @@ namespace AcademicBot
 
                             if (formattedResponseText.Length < 5)
                             {
-                                replyText.Append("Sorry, your query returned no results. Please, start a new query.\n");
+                                replyText.Append("Sorry, I am told that your query to be ambiguous. I am not yet trained for this type of ambiguity. Please, start a new query.\n");
                             }
                             else
                             {
@@ -99,7 +99,7 @@ namespace AcademicBot
 
                             if (formattedResponseText.Length < 5)
                             {
-                                replyText.Append("Sorry, your query returned no results. Please, start a new query.\n");
+                                replyText.Append("Sorry, I am told that your query to be ambiguous. I am not yet trained for this type of ambiguity. Please, start a new query.\n");
                             }
                             else
                             {
