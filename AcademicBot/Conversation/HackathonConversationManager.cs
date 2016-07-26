@@ -167,7 +167,9 @@
         public async Task EndStructedConjunctiveQueryAsync(Activity activity)
         {
             // do nothing
-            await Task.FromResult(true);
+            BotData data = await this.GetBotDataAsync(activity);
+            data.SetProperty<bool>(HackathonConversationManager.IsQueryRunning, false);
+            await this.SetBotDataAsync(activity, data);
         }
 
         private async Task SetBotDataAsync(Activity activity, BotData data)

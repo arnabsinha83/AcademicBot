@@ -37,7 +37,7 @@ namespace AcademicBot
                     replyText.Append(ConversationUtility.GetHelpText());
                 }
                 // If a valid new query
-                else if(activity.Text.Length > 2 && activity.Text.ToUpper().Substring(0, ConversationConstants.QUESTION_PREFIX.Length).Equals(ConversationConstants.QUESTION_PREFIX))
+                else if(activity.Text.Length > ConversationConstants.QUESTION_PREFIX.Length && activity.Text.ToUpper().Substring(0, ConversationConstants.QUESTION_PREFIX.Length).Equals(ConversationConstants.QUESTION_PREFIX))
                 {
                     string query = activity.Text.Substring(ConversationConstants.QUESTION_PREFIX.Length);
                     List<Predicate> predicateList = AcademicApi.CallInterpretMethod(query);
@@ -57,10 +57,13 @@ namespace AcademicBot
                         }
                         else
                         {
+                        
                             string formattedResponseText = await this.GetFormattedResponseAsync(activity, convManager);
+                            await convManager.EndStructedConjunctiveQueryAsync(activity);
 
                             replyText.Append("Here is the list of answers\n\n");
                             replyText.Append(formattedResponseText);
+                            replyText.Append("\n\n Last question was answerd successfully. You can start a new question now!!\n\n");
                         }
                     }
                 }
@@ -82,9 +85,11 @@ namespace AcademicBot
                         else
                         {
                             string formattedResponseText = await this.GetFormattedResponseAsync(activity, convManager);
+                            await convManager.EndStructedConjunctiveQueryAsync(activity);
 
                             replyText.Append("Here is the list of answers.\n\n");
                             replyText.Append(formattedResponseText);
+                            replyText.Append("\n\n Last question was answerd successfully. You can start a new question now!!\n\n");
                         }
                     }
                 }
