@@ -170,7 +170,7 @@ namespace AcademicBot.Output
             string reply = string.Join(", ", authorList);
             if(authors.Length > MaxAuthors)
             {
-                reply += "...";
+                reply += ", ...";
             }
             return reply;
         }
