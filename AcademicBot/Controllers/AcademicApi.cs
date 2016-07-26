@@ -58,7 +58,7 @@ namespace AcademicBot.Controllers
                                                 int count = 10,
                                                 int offset = 0)
         {
-            string url = string.Format("https://api.projectoxford.ai/academic/v1.0/evaluate?expr={0}&model=latest&count={1}&offset={2}&attributes=Ti,Y,CC,AA.AuN,AA.AuId",
+            string url = string.Format("https://api.projectoxford.ai/academic/v1.0/evaluate?expr={0}&model=latest&count={1}&offset={2}&attributes=Id,Ti,Y,CC,AA.AuN,AA.AuId",
                                             expr, count, offset);
 
             // Get the Json response
@@ -116,6 +116,7 @@ namespace AcademicBot.Controllers
         public class Entity
         {
             public float logprob { get; set; }
+            public Int64 Id { get; set; }
             public string Ti { get; set; }
             public int Y { get; set; }
             public int CC { get; set; }
