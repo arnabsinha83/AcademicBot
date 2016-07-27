@@ -79,10 +79,11 @@ namespace AcademicBot.Controllers
             query = query.Replace("papers authored by ", "papers by ");
             query = query.Replace("papers published by ", "papers by ");
             query = query.Replace("papers published at ", "");
-            query = query.Replace("papers published in ", "");
-            query = query.Replace("papers at ", "");
+            query = query.Replace("papers published in ", " ");
+            query = query.Replace("papers at ", " ");
             query = query.Replace(" published in ", " ");
             query = query.Replace(" in ", " ");
+            query = query.Replace(" and ", " ");
             query = Regex.Replace(query, @"\s+", @" ");
             return query.Trim();
         }

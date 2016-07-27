@@ -121,7 +121,6 @@ namespace AcademicBot
             }
 
             StringBuilder replyText = new StringBuilder();
-            replyText.Append("Here is the list of answers.\n\n");
 
             if (formattedResponseText.Length < 5)
             {
@@ -129,9 +128,10 @@ namespace AcademicBot
             }
             else
             {
+                replyText.Append("Here is the list of papers.\n\n");
                 replyText.Append(formattedResponseText);
                 string academicMicrosoftLink = AcademicApi.CreateAcademicMicrosoftLinkFromNaturalLanguageQuery(query);
-                replyText.Append(String.Format("\n\n Find more results [here]{0}. Last question was answered successfully. You can start a new question now!!\n\n", academicMicrosoftLink));
+                replyText.Append(String.Format("\n\n Find more results [here]{0}. Last question was answered successfully. You can start a new question now!\n\n", academicMicrosoftLink));
             }
 
             await convManager.EndStructedConjunctiveQueryAsync(activity);
