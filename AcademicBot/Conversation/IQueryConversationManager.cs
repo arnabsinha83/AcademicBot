@@ -13,7 +13,7 @@
         /// Starts conversation for a new query. 
         /// </summary>
         /// <param name="predicates"></param>
-        Task InitStructuredConjunctiveQueryAsync(List<Predicate> predicates, Activity activity);
+        Task InitStructuredConjunctiveQueryAsync(List<Predicate> predicates, string query, Activity activity);
 
         /// <summary>
         /// Once a query conversation has started, this method figures out whether 

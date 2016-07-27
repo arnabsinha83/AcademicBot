@@ -28,6 +28,8 @@ namespace AcademicBot
             HackathonConversationManager convManager = HackathonConversationManager.GetInstance();
             StringBuilder replyText = new StringBuilder();
             Activity reply;
+            string query;
+            List<Predicate> predicateList;
             
             if (activity.Type == ActivityTypes.Message)
             {
@@ -39,8 +41,8 @@ namespace AcademicBot
                 // If a valid new query
                 else if(activity.Text.Length > ConversationConstants.QUESTION_PREFIX.Length && activity.Text.ToUpper().Substring(0, ConversationConstants.QUESTION_PREFIX.Length).Equals(ConversationConstants.QUESTION_PREFIX))
                 {
-                    string query = activity.Text.Substring(ConversationConstants.QUESTION_PREFIX.Length);
-                    List<Predicate> predicateList = AcademicApi.CallInterpretMethod(query);
+                    query = activity.Text.Substring(ConversationConstants.QUESTION_PREFIX.Length);
+                    predicateList = AcademicApi.CallInterpretMethod(query);
 
                     if (predicateList.Count == 0)
                     {
@@ -48,7 +50,7 @@ namespace AcademicBot
                     }
                     else
                     {
-                        await convManager.InitStructuredConjunctiveQueryAsync(predicateList, activity);
+                        await convManager.InitStructuredConjunctiveQueryAsync(predicateList, query, activity);
 
                         // If the query is unambiguous
                         if (await convManager.ShouldAskClarifyingQuestionAsync(activity))
@@ -57,9 +59,10 @@ namespace AcademicBot
                         }
                         else
                         {
-                            replyText = await HandleTerminalResponse(convManager,
+                            replyText.Append(await HandleTerminalResponse(convManager,
                                                                      activity,
-                                                                     query);
+                                                                     query,
+                                                                     predicateList));
                         }
                     }
                 }
@@ -80,20 +83,10 @@ namespace AcademicBot
                         }
                         else
                         {
-                            string formattedResponseText = await this.GetFormattedResponseAsync(activity, convManager);
-                            await convManager.EndStructedConjunctiveQueryAsync(activity);
-
-                            replyText.Append("Here is the list of answers.\n\n");
-
-                            if (formattedResponseText.Length < 5)
-                            {
-                                replyText.Append("Sorry, I am told that your query to be ambiguous. I am not yet trained for this type of ambiguity. Please, start a new query.\n");
-                            }
-                            else
-                            {
-                                replyText.Append(formattedResponseText);
-                                replyText.Append("\n\n Last question was answerd successfully. You can start a new question now!!\n\n");
-                            }
+                            replyText.Append(await HandleTerminalResponse(convManager,
+                                                                     activity,
+                                                                     await convManager.GetUserQueryAsync(activity),
+                                                                     await convManager.GetStructuredConjunctiveQueryAsync(activity)));
                         }
                     }
                 }
@@ -114,19 +107,25 @@ namespace AcademicBot
             return response;
         }
 
-        private async Task<StringBuilder> HandleTerminalResponse(HackathonConversationManager convManager,
+        private async Task<string> HandleTerminalResponse(HackathonConversationManager convManager,
                                                                  Activity activity,
-                                                                 string query)
+                                                                 string query,
+                                                                 List<Predicate> predicates)
         {
-            string formattedResponseText = await this.GetFormattedResponseAsync(activity, convManager);
-            await convManager.EndStructedConjunctiveQueryAsync(activity);
-            StringBuilder replyText = new StringBuilder();
+            string formattedResponseText = await this.GetFormattedResponseAsync(activity, convManager, predicates);
 
+            while(formattedResponseText.Length < 5 && predicates.Count > 1)
+            {
+                predicates.RemoveAt(predicates.Count - 1);
+                formattedResponseText = await this.GetFormattedResponseAsync(activity, convManager, predicates);
+            }
+
+            StringBuilder replyText = new StringBuilder();
             replyText.Append("Here is the list of answers.\n\n");
 
             if (formattedResponseText.Length < 5)
             {
-                replyText.Append("Sorry, I am told that your query to be ambiguous. I am not yet trained for this type of ambiguity. Please, start a new query.\n");
+                replyText.Append("Sorry, I am told that your query is ambiguous. I am not yet trained for this type of ambiguity. Please, start a new query.\n");
             }
             else
             {
@@ -134,12 +133,18 @@ namespace AcademicBot
                 string academicMicrosoftLink = AcademicApi.CreateAcademicMicrosoftLink(query);
                 replyText.Append(String.Format("\n\n Find more results [here]{0}. Last question was answered successfully. You can start a new question now!!\n\n", academicMicrosoftLink));
             }
-            return replyText;
+
+            await convManager.EndStructedConjunctiveQueryAsync(activity);
+            return replyText.ToString();
         }
 
-        private async Task<string> GetFormattedResponseAsync(Activity activity, HackathonConversationManager convManager)
+        private async Task<string> GetFormattedResponseAsync(Activity activity, HackathonConversationManager convManager, List<Predicate> structuredQueryPredicates)
         {
-            List<Predicate> structuredQueryPredicates = await convManager.GetStructuredConjunctiveQueryAsync(activity);
+            if (structuredQueryPredicates == null)
+            {
+                structuredQueryPredicates = await convManager.GetStructuredConjunctiveQueryAsync(activity);
+            }
+
             string structuredQuery = Utilities.GetPredicateConjunction(structuredQueryPredicates);
             string unformattedResponseText = AcademicApi.CallEvaluateMethod(structuredQuery, ConversationConstants.MAX_RESULTS);
             return new JsonFormatter(unformattedResponseText).FormatEvaluateModel();

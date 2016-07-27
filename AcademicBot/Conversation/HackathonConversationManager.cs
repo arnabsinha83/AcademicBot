@@ -13,9 +13,9 @@
         private static readonly string QueryName = "academicQuery";
         private static readonly string IsQueryRunning = "IsqueryRunning";
         private static readonly string QuestionDataText = "question";
+        private static readonly string UserQueryText = "userQueryText";
 
         private static HackathonConversationManager singletonConversationManager;
-
 
         private HackathonConversationManager()
         {
@@ -39,16 +39,23 @@
             return ans;
         }
 
-        public async Task InitStructuredConjunctiveQueryAsync(List<Predicate> predicates, Activity activity)
+        public async Task InitStructuredConjunctiveQueryAsync(List<Predicate> predicates, string userQuery, Activity activity)
         {
             BotData data = await this.GetBotDataAsync(activity);
 
             HackathonConjunctiveQuery query = new HackathonConjunctiveQuery(predicates);
             string serializedString = JsonConvert.SerializeObject(query.GetAllPredicates());
             data.SetProperty<string>(HackathonConversationManager.QueryName, serializedString);
+            data.SetProperty<string>(HackathonConversationManager.UserQueryText, userQuery);
             data.SetProperty<bool>(HackathonConversationManager.IsQueryRunning, true);
 
             await this.SetBotDataAsync(activity, data);
+        }
+
+        public async Task<string> GetUserQueryAsync(Activity activity)
+        {
+            BotData data = await this.GetBotDataAsync(activity);
+            return data.GetProperty<string>(HackathonConversationManager.UserQueryText);
         }
 
         public async Task<bool> ShouldAskClarifyingQuestionAsync(Activity activity)
