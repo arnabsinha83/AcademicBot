@@ -98,16 +98,18 @@
                 {
                     string structuredQuery = r.output.value;
 
+                    #region Commented out
                     // Note: Ignore structured queries when there are multiple interpretations
                     // and there are more than one Composite for now. Think about it later. However, 
                     // we are dealing with queries like "sharad malik about boolean satisfiability" and
                     // "nips 2010". Note that we cannot serve queries like "princeton university laser"
                     // right now
-                    if ((PredicateCompositeRegex.Matches(structuredQuery).Count > 1) &&
-                        (interpretationCount > 1))
-                    {
-                        continue;
-                    }
+                    //if ((PredicateCompositeRegex.Matches(structuredQuery).Count > 1) &&
+                    //    (interpretationCount > 1))
+                    //{
+                    //    continue;
+                    //}
+                    #endregion
 
                     #region Deal with predicates like "Composite(AA.AuN == 'albert einstein')"
                     foreach (Match match in PredicateCompositeRegex.Matches(structuredQuery))
