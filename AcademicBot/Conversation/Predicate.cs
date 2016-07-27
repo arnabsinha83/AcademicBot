@@ -90,17 +90,21 @@
         #region Get the array of predicates from the interpretations
         public static List<Conversation.Predicate> GetPredicateList(InterpretModel.Rootobject obj)
         {
+            int interpretationCount = obj.interpretations.Length;
             List<Conversation.Predicate> predicateList = new List<Conversation.Predicate>();
             foreach (var interpretation in obj.interpretations)
             {
                 foreach (var r in interpretation.rules)
                 {
                     string structuredQuery = r.output.value;
-             
-                    // Note: Ignore structured queries where there are more than one Composite 
-                    // for now. Think about it later. However, we are dealing with queries like
-                    // "nips 2010". For that I will split the Regex
-                    if(PredicateCompositeRegex.Matches(structuredQuery).Count > 1)
+
+                    // Note: Ignore structured queries when there are multiple interpretations
+                    // and there are more than one Composite for now. Think about it later. However, 
+                    // we are dealing with queries like "sharad malik about boolean satisfiability" and
+                    // "nips 2010". Note that we cannot serve queries like "princeton university laser"
+                    // right now
+                    if ((PredicateCompositeRegex.Matches(structuredQuery).Count > 1) &&
+                        (interpretationCount > 1))
                     {
                         continue;
                     }

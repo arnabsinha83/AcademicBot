@@ -42,8 +42,8 @@
                 else
                 {
                     set.Add(predicate);
-                    if(set.Count == 2)
-                        this.numAmbiguousPredicates++;
+                    //if(set.Count == 2)
+                    //    this.numAmbiguousPredicates++;
                 }
             }
             else

@@ -130,7 +130,7 @@ namespace AcademicBot
             else
             {
                 replyText.Append(formattedResponseText);
-                string academicMicrosoftLink = AcademicApi.CreateAcademicMicrosoftLink(query);
+                string academicMicrosoftLink = AcademicApi.CreateAcademicMicrosoftLinkFromNaturalLanguageQuery(query);
                 replyText.Append(String.Format("\n\n Find more results [here]{0}. Last question was answered successfully. You can start a new question now!!\n\n", academicMicrosoftLink));
             }
 

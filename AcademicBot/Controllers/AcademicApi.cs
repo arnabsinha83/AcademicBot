@@ -54,6 +54,23 @@ namespace AcademicBot.Controllers
         }
         #endregion
 
+        // Reference: https://dev.projectoxford.ai/docs/services/56332331778daf02acc0a50b/operations/565d753be597ed16ac3ffc03
+        #region Evaluate method
+        public static string CallEvaluateMethod(string expr,
+                                                int count = 2, // currently we are showing just two results avoiding clutter
+                                                int offset = 0)
+        {
+            string entityAttributes = "Id,Ti,Y,CC,AA.AuN,AA.AuId,AA.AfN,AA.AfId,F.FN,F.FId,J.JId,J.JN,C.CN,C.CId,E";
+            string url = string.Format("https://api.projectoxford.ai/academic/v1.0/evaluate?expr={0}&model=latest&count={1}&offset={2}&attributes={3}",
+                                            expr, count, offset, entityAttributes);
+
+            // Get the Json response
+            string result = GetJsonResponse(url);
+
+            return result;
+        }
+        #endregion
+
         private static string SanitizeQuery(string query)
         {
             query = query.ToLower();
@@ -70,7 +87,7 @@ namespace AcademicBot.Controllers
             return query.Trim();
         }
 
-        public static string CreateAcademicMicrosoftLink(string query)
+        public static string CreateAcademicMicrosoftLinkFromNaturalLanguageQuery(string query)
         {
             string sanitizedQuery = SanitizeQuery(query);
             string iq = String.Format("%2540{0}%2540", sanitizedQuery.Replace(" ", "%2520"));
@@ -78,22 +95,12 @@ namespace AcademicBot.Controllers
             return String.Format("(https://academic.microsoft.com/#/search?iq={0}&q={1}&filters=&from=0&sort=0)", iq, q);
         }
 
-        // Reference: https://dev.projectoxford.ai/docs/services/56332331778daf02acc0a50b/operations/565d753be597ed16ac3ffc03
-        #region Evaluate method
-        public static string CallEvaluateMethod(string expr,
-                                                int count = 10,
-                                                int offset = 0)
+        public static string CreateAcademicMicrosoftLinkFromStructuredQuery(string query)
         {
-            string entityAttributes = "Id,Ti,Y,CC,AA.AuN,AA.AuId,AA.AfN,AA.AfId,F.FN,F.FId,J.JId,J.JN,C.CN,C.CId,E";
-            string url = string.Format("https://api.projectoxford.ai/academic/v1.0/evaluate?expr={0}&model=latest&count={1}&offset={2}&attributes={3}",
-                                            expr, count, offset, entityAttributes);
-
-            // Get the Json response
-            string result = GetJsonResponse(url);
-
-            return result;
+            string iq = query.Replace("=", "%3D");
+            return String.Format("(https://academic.microsoft.com/#/search?iq={0}&filters=&from=0&sort=0)", iq);
         }
-        #endregion
+
     }
 
     public class InterpretModel

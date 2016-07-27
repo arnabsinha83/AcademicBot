@@ -109,13 +109,28 @@
             switch(entry.Key)
             {
                 case PredicateType.AuthorName:
-                    questionText.Append("Your query matched multiple authors. Plese pick one to proceed");
+                    questionText.Append("Your query matched multiple authors. Please pick one to proceed. ");
+                    questionText.Append(this.GetQuestionOptions(entry.Value, out ambiguousPredicate));
+                    break;
+
+                case PredicateType.Affiliation:
+                    questionText.Append("Your query matched multiple affiliations. Please pick one to proceed. ");
+                    questionText.Append(this.GetQuestionOptions(entry.Value, out ambiguousPredicate));
+                    break;
+
+                case PredicateType.FieldOfStudy:
+                    questionText.Append("Your query matched multiple fields of study. Please pick one to proceed. ");
+                    questionText.Append(this.GetQuestionOptions(entry.Value, out ambiguousPredicate));
+                    break;
+
+                case PredicateType.PaperVenue:
+                    questionText.Append("Your query matched multiple venues. Please pick one to proceed. ");
                     questionText.Append(this.GetQuestionOptions(entry.Value, out ambiguousPredicate));
                     break;
 
                 default:
                     ambiguousPredicate = new List<Predicate>();
-                    questionText.Append("Sorry, your query is ambiguous.Curently I am wroking on how to ask clarifying questions to resolve this specific type of ambiguity.");
+                    questionText.Append("Sorry, your query is ambiguous. Currently, I am working on how to ask clarifying questions to resolve this specific type of ambiguity.");
                     break;
             }
 
@@ -130,7 +145,7 @@
 
             foreach (Predicate p in value)
             {
-                sb.Append(String.Format("({0}) {1}\n", count++, p.Value));
+                sb.Append(String.Format(" ({0}) {1}\n", count++, p.Value));
                 ambiguousPredicate.Add(p);
             }
 
